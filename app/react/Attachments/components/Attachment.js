@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import filesize from 'filesize';
+
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-
+import { Translate } from 'app/I18N';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
@@ -53,6 +53,37 @@ const conformThumbnail = (file, item) => {
 };
 
 export class Attachment extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { dropdownMenuOpen: false };
+
+    this.toggleDropdown = this.toggleDropdown.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.copyToClipboard = this.copyToClipboard.bind(this);
+  }
+
+  myRef = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
+  handleClickOutside = e => {
+    if (!this.myRef.current.contains(e.target)) {
+      this.setState({ dropdownMenuOpen: false });
+    }
+  };
+
+  toggleDropdown = () => {
+    this.setState(prevState => ({
+      dropdownMenuOpen: !prevState.dropdownMenuOpen,
+    }));
+  };
+
   deleteAttachment(attachment) {
     this.context.confirm({
       accept: () => {
@@ -61,6 +92,16 @@ export class Attachment extends Component {
       title: 'Confirm delete',
       message: this.props.deleteMessage,
     });
+  }
+
+  copyToClipboard(text, event) {
+    event.preventDefault();
+    const dummy = document.createElement('textarea');
+    document.body.appendChild(dummy);
+    dummy.value = window.location.origin + text;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
   }
 
   render() {
@@ -80,32 +121,7 @@ export class Attachment extends Component {
       </a>
     );
 
-    let buttons = (
-      <div>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <div className="attachment-buttons">
-            <ShowIf if={!this.props.readOnly}>
-              <button
-                type="button"
-                className="item-shortcut btn btn-default"
-                onClick={this.props.loadForm.bind(this, model, file)}
-              >
-                <Icon icon="pencil-alt" />
-              </button>
-            </ShowIf>
-            <ShowIf if={item.deletable && !this.props.readOnly}>
-              <button
-                type="button"
-                className="item-shortcut btn btn-default btn-hover-danger"
-                onClick={this.deleteAttachment.bind(this, file)}
-              >
-                <Icon icon="trash-alt" />
-              </button>
-            </ShowIf>
-          </div>
-        </NeedAuthorization>
-      </div>
-    );
+    let buttons = null;
 
     if (this.props.beingEdited && !this.props.readOnly) {
       name = (
@@ -147,10 +163,53 @@ export class Attachment extends Component {
     }
 
     return (
-      <div className="attachment">
-        {name}
-        {buttons}
-      </div>
+      <NeedAuthorization roles={['admin', 'editor']}>
+        <div className="attachment">
+          {name}
+          {buttons}
+
+          <div className="dropdown attachments-dropdown">
+            <button
+              className="btn btn-default dropdown-toggle attachments-dropdown-toggle"
+              type="button"
+              id="dropdownMenu1"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="true"
+              onClick={this.toggleDropdown}
+            >
+              <Icon icon="pencil-alt" />
+            </button>
+            <ul
+              className="dropdown-menu dropdown-menu-right"
+              aria-labelledby="dropdownMenu1"
+              style={{ display: this.state.dropdownMenuOpen ? 'block' : 'none' }}
+              ref={this.myRef}
+            >
+              <li>
+                <a href="#" onClick={e => this.copyToClipboard(item.downloadHref, e)}>
+                  <Icon icon="link" /> <Translate>Copy link</Translate>
+                </a>
+              </li>
+              <li>
+                <a href={item.downloadHref} target="_blank">
+                  <Icon icon="link" /> <Translate>Download</Translate>
+                </a>
+              </li>
+              <li>
+                <a href="#" onClick={this.props.loadForm.bind(this, model, file)}>
+                  <Icon icon="pencil-alt" /> <Translate>Rename</Translate>
+                </a>
+              </li>
+              <li>
+                <a href="#" onClick={this.deleteAttachment.bind(this, file)}>
+                  <Icon icon="trash-alt" /> <Translate>Delete</Translate>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </NeedAuthorization>
     );
   }
 }
