@@ -316,7 +316,6 @@ export class DocumentSidePanel extends Component {
               </div>
             </ShowIf>
           </NeedAuthorization>
-
           <NeedAuthorization roles={['admin', 'editor']}>
             <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
               <div className="sidepanel-footer">
@@ -431,6 +430,7 @@ export class DocumentSidePanel extends Component {
           </div>
         </SidePanel>
       </>
+
     );
   }
 }
