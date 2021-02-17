@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
-import { AttachmentsList, AttachmentsModal } from 'app/Attachments';
+import { AttachmentsList } from 'app/Attachments';
 import { FileList } from 'app/Attachments/components/FileList';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import { ConnectionsGroups } from 'app/ConnectionsList';
@@ -333,14 +333,14 @@ export class DocumentSidePanel extends Component {
 
           <div className="sidepanel-body">
             <Tabs selectedTab={this.props.tab || 'metadata'}>
-              <TabContent for="text-search">
+              <TabContent for="text-search" className="text-search">
                 <SearchText
                   doc={doc}
                   storeKey={this.props.storeKey}
                   searchTerm={this.props.searchTerm}
                 />
               </TabContent>
-              <TabContent for="toc">
+              <TabContent for="toc" className="toc">
                 <ShowIf if={!this.props.tocBeingEdited}>
                   <ShowToc
                     toc={defaultDocumentToC}
@@ -360,7 +360,7 @@ export class DocumentSidePanel extends Component {
                   />
                 </ShowIf>
               </TabContent>
-              <TabContent for="metadata">
+              <TabContent for="metadata" className="metadata">
                 {(() => {
                   if (docBeingEdited && this.state.copyFrom) {
                     return (
@@ -414,7 +414,7 @@ export class DocumentSidePanel extends Component {
                   );
                 })()}
               </TabContent>
-              <TabContent for="references">
+              <TabContent for="references" className="references">
                 <Connections
                   referencesSection="references"
                   references={references}
