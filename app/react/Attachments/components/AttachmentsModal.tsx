@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+
 import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
@@ -27,14 +29,13 @@ interface AttachmentsModalProps {
   getPercentage?: number;
 }
 
-// eslint-disable-next-line react/prop-types
 const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   isOpen,
   entitySharedId,
   storeKey,
   onClose,
-  uploadAttachment,
-  uploadAttachmentFromUrl,
+  uploadAttachment: uploadAttachmentProp,
+  uploadAttachmentFromUrl: uploadAttachmentFromUrlProp,
   getPercentage,
 }) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
@@ -48,19 +49,19 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       [...event.target.files].forEach(file => {
-        uploadAttachment(entitySharedId, file, storeKey);
+        uploadAttachmentProp(entitySharedId, file, storeKey);
       });
     }
   };
 
   const handleDropFiles = (accepted: File[]) => {
     accepted.forEach(file => {
-      uploadAttachment(entitySharedId, file, storeKey);
+      uploadAttachmentProp(entitySharedId, file, storeKey);
     });
   };
 
   const handleSubmitUrlForm = (formModelData: any) => {
-    uploadAttachmentFromUrl(entitySharedId, formModelData.name, formModelData.url, storeKey);
+    uploadAttachmentFromUrlProp(entitySharedId, formModelData.name, formModelData.url, storeKey);
   };
 
   return (
