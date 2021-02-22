@@ -430,7 +430,6 @@ export class DocumentSidePanel extends Component {
           </div>
         </SidePanel>
       </>
-
     );
   }
 }

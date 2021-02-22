@@ -1,4 +1,6 @@
-import React, { DragEvent, useRef, useState } from 'react';
+/* eslint-disable react/prop-types */
+
+import React, { DragEvent, useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
@@ -27,7 +29,6 @@ interface AttachmentsModalProps {
   getPercentage?: number;
 }
 
-// eslint-disable-next-line react/prop-types
 const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   isOpen,
   entitySharedId,
@@ -53,11 +54,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
     }
   };
 
-  const handleDropFiles = (
-    accepted: File[],
-    rejected: File[],
-    event: DragEvent<HTMLDivElement>
-  ) => {
+  const handleDropFiles = (accepted: File[]) => {
     accepted.forEach(file => {
       uploadAttachment(entitySharedId, file, storeKey);
     });
